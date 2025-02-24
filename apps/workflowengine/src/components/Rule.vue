@@ -31,7 +31,8 @@
 			<Operation :operation="operation" :colored="false">
 				<component v-if="operation.component"
 						   :is="operation.component"
-						   @input="updateOperationByEvent"
+						   :model-value="inputValue"
+						   @update:model-value="updateOperationByEvent"
 						   ref="operationComponent"
 				/>
 				<component :is="operation.options"
@@ -104,6 +105,7 @@ export default {
 			dirty: this.rule.id < 0,
 			originalRule: null,
 			component: null,
+			inputValue: '',
 		}
 	},
 	computed: {
@@ -132,10 +134,15 @@ export default {
 			const lastCheck = this.rule.checks[this.rule.checks.length - 1]
 			return typeof lastCheck === 'undefined' || lastCheck.class !== null
 		},
+		currentRule() {
+			return {
+				...this.rule,
+				operation: this.inputValue,
+			}
+		}
 	},
 	mounted() {
 		this.originalRule = JSON.parse(JSON.stringify(this.rule))
-
 
 		if (this.operation?.component) {
 			this.$refs.operationComponent.value = this.rule.operation
@@ -151,13 +158,12 @@ export default {
 			this.updateRule()
 		},
 		async updateOperationByEvent(event) {
-			this.$set(this.rule, 'operation', event.detail[0])
-			this.$refs.operationComponent.value = this.rule.operation
+			this.inputValue = event.detail[0]
 			this.updateRule()
 		},
 		validate(/* state */) {
 			this.error = null
-			this.$store.dispatch('updateRule', this.rule)
+			this.$store.dispatch('updateRule', this.currentRule)
 		},
 		updateRule() {
 			if (!this.dirty) {
@@ -165,14 +171,14 @@ export default {
 			}
 
 			this.error = null
-			this.$store.dispatch('updateRule', this.rule)
+			this.$store.dispatch('updateRule', this.currentRule)
 		},
 		async saveRule() {
 			try {
-				await this.$store.dispatch('pushUpdateRule', this.rule)
+				await this.$store.dispatch('pushUpdateRule', this.currentRule)
 				this.dirty = false
 				this.error = null
-				this.originalRule = JSON.parse(JSON.stringify(this.rule))
+				this.originalRule = JSON.parse(JSON.stringify(this.currentRule))
 			} catch (e) {
 				console.error('Failed to save operation')
 				this.error = e.response.data.ocs.meta.message
@@ -180,34 +186,34 @@ export default {
 		},
 		async deleteRule() {
 			try {
-				await this.$store.dispatch('deleteRule', this.rule)
+				await this.$store.dispatch('deleteRule', this.currentRule)
 			} catch (e) {
 				console.error('Failed to delete operation')
 				this.error = e.response.data.ocs.meta.message
 			}
 		},
 		cancelRule() {
-			if (this.rule.id < 0) {
-				this.$store.dispatch('removeRule', this.rule)
+			if (this.currentRule.id < 0) {
+				this.$store.dispatch('removeRule', this.currentRule)
 			} else {
-				this.$refs.operationComponent.value = this.originalRule.operation
+				this.inputValue = this.originalRule.operation
 				this.$store.dispatch('updateRule', this.originalRule)
-				this.originalRule = JSON.parse(JSON.stringify(this.rule))
+				this.originalRule = JSON.parse(JSON.stringify(this.currentRule))
 				this.dirty = false
 			}
 		},
 
 		async removeCheck(check) {
-			const index = this.rule.checks.findIndex(item => item === check)
+			const index = this.currentRule.checks.findIndex(item => item === check)
 			if (index > -1) {
-				this.$delete(this.rule.checks, index)
+				this.$delete(this.currentRule.checks, index)
 			}
-			this.$store.dispatch('updateRule', this.rule)
+			this.$store.dispatch('updateRule', this.currentRule)
 		},
 
 		onAddFilter() {
 			// eslint-disable-next-line vue/no-mutating-props
-			this.rule.checks.push({ class: null, operator: null, value: '' })
+			this.currentRule.checks.push({ class: null, operator: null, value: '' })
 		},
 	},
 }
