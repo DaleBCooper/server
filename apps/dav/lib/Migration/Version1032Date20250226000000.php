@@ -17,8 +17,8 @@ use OCP\Migration\Attributes\ColumnType;
 use OCP\Migration\IOutput;
 use OCP\Migration\SimpleMigrationStep;
 
-#[AddColumn(table: 'calendars', name: 'enabled', type: ColumnType::BOOLEAN, default: true)]
-#[AddColumn(table: 'calendarsubscriptions', name: 'enabled', type:  ColumnType::BOOLEAN, default: true)]
+#[AddColumn(table: 'calendars', name: 'enabled', type: ColumnType::BOOLEAN)]
+#[AddColumn(table: 'calendarsubscriptions', name: 'enabled', type:  ColumnType::BOOLEAN)]
 class Version1032Date20250226000000 extends SimpleMigrationStep {
 
 	public function __construct(

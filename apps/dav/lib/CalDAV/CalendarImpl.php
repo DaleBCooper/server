@@ -136,7 +136,7 @@ class CalendarImpl implements ICreateFromString, IHandleImipMessage, ICalendarIs
 	 * @since 32.0.0
 	 */
 	public function isEnabled(): bool {
-		return (bool)$this->calendarInfo['{http://owncloud.org/ns}calendar-enabled'] ?? true;
+		return $this->calendarInfo['{http://owncloud.org/ns}calendar-enabled'] ?? true;
 	}
 
 	/**
