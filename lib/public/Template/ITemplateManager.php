@@ -11,6 +11,9 @@ namespace OCP\Template;
 
 use OCP\AppFramework\Http\TemplateResponse;
 
+/**
+ * @since 32.0.0
+ */
 interface ITemplateManager {
 	/**
 	 * @param TemplateResponse::RENDER_AS_* $renderAs
@@ -33,7 +36,7 @@ interface ITemplateManager {
 	public function printErrorPage(string $error_msg, string $hint = '', int $statusCode = 500): never;
 
 	/**
-	 * print error page using Exception details
+	 * Print error page using Exception details
 	 * @since 32.0.0
 	 */
 	public function printExceptionErrorPage(\Throwable $exception, int $statusCode = 503): never;
