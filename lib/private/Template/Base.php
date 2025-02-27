@@ -75,7 +75,7 @@ class Base {
 	 *
 	 * If the key existed before, it will be overwritten
 	 */
-	public function assign(string $key, float|array|bool|int|string|\Throwable $value): void {
+	public function assign(string $key, float|array|bool|int|string|\Throwable|null $value): void {
 		$this->vars[$key] = $value;
 	}
 
