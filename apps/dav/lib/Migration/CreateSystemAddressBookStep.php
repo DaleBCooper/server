@@ -15,7 +15,9 @@ use OCP\Migration\IRepairStep;
 
 class CreateSystemAddressBookStep implements IRepairStep {
 
-	public function __construct(private SyncService $syncService) {
+	public function __construct(
+		private SyncService $syncService,
+	) {
 	}
 
 	public function getName(): string {
